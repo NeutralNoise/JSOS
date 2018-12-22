@@ -1,0 +1,6 @@
+#ifndef DEFINES_H_STD_INCLUDED
+#define DEFINES_H_STD_INCLUDED
+
+#define MB 1000000 //!< 1 MB as bytes.
+
+#endif //DEFINES_H_STD_INCLUDED
