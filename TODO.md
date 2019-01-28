@@ -15,11 +15,15 @@
 | va_list |      |
 | printf  |      |
 
+See [tier0.md](Documents/tier0.md)
+
 ## Memory
 
 | Task                 | Done |
 |----------------------|------|
 | Better Memory Paging |      |
+
+See [MemoryIdeas.md](Documents/MemoryIdeas.md)
 
 ## Terminal
 
@@ -30,6 +34,19 @@
 
 ## Drivers
 ### Input
+| Task               | Done |
+|--------------------|------|
+| Keyborad interupts |      |
+
 ### Display
 ### Network
+| Task             | Done |
+|------------------|------|
+| TCP/IP Stack     |      |
+| UDP?             |      |
+| Socket Interface |      |
+
 ### HDD
+| Task               | Done |
+|--------------------|------|
+| Save/Loading Files |      |
