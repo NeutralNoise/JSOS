@@ -19,9 +19,9 @@ See [tier0.md](Documents/tier0.md)
 
 ## Memory
 
-| Task                 | Done |
-|----------------------|------|
-| Better Memory Paging |      |
+| Task          | Done |
+|---------------|------|
+| Memory Paging |      |
 
 See [MemoryIdeas.md](Documents/MemoryIdeas.md)
 
