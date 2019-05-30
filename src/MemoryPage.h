@@ -4,6 +4,9 @@
 #include "types.h"
 #include "MemorySegment.h"
 
+// This memory paging is wrong to the point of being so wrong that its not even in this galexy any more.
+// #TODO Rewrite this to use the MMU.
+
 struct MemoryPage {
   MemoryPage * next = nullptr; //!< The next memory page.
   MemoryPage * prev = nullptr; //!< The memory page before this one.
