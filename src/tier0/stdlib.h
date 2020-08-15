@@ -1,6 +1,6 @@
 #ifndef STD_LIB_H_INCLUDED
 #define STD_LIB_H_INCLUDED
-//This is jsut here when working on this file. Its a bitch to read other wise.
+//This is just here when working on this file. Its a bitch to read other wise.
 //#define __JS_OS
 
 //This needs to be defined with the -D compile flag.
