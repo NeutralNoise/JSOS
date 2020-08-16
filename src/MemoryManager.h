@@ -1,7 +1,7 @@
 #ifndef MEMORY_MANAGER_H_INCLUDED
 #define MEMORY_MANAGER_H_INCLUDED
 
-#include "MemoryPage.h"
+#include "MemorySegment.h"
 #include "types.h"
 
 class MemoryManager {
@@ -16,8 +16,7 @@ void* Malloc(const size_t &size);
 void Free(void* ptr);
 
 protected:
-MemoryPage * p_first = nullptr;
-MemoryPage * p_cachedPage = nullptr; //!< The last accessed memory page.
+MemorySegment * p_first = nullptr;
 private:
   uint32_t m_freeSpace = 0;
   uint32_t m_totalSpace = 0;
