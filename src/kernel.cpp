@@ -4,6 +4,8 @@
 #include "tier0/stdio.h"
 #include "MemoryManager.h"
 #include "tier0/stdlib.h"
+#include "tier0/sys/terminal.h"
+
 //Call constructors for globals
 typedef void (*constructor)();
 extern "C" constructor start_ctors;
@@ -15,14 +17,19 @@ extern "C" void callConstructors() {
 }
 
 extern "C" void kernelMain(void* multiboot_struct, uint32_t magicNum) {
-  char * d = "Hello World\n";
-  printf(d);
-  printf("JSOS Version: 0.00000000000001\n\0");
-  char *testd = "Hello World";
   GlobalDescriptorTable gdt;
   uint32_t* memupper = (uint32_t*)(((size_t)multiboot_struct) + 8);
   size_t heap = 10*1024*1024;
   MemoryManager memManager(heap, (*memupper)*1024 - heap - 10*1024);
+
+  Terminal::CreateInstance();
+  char msg[13] = "Hello World\n";
+  const char * testMsg = "TestMessage!\n";
+
+  printf(msg);
+  printf("JSOS Version: ");
+  printf("1");
+
   int32_t * memTest = nullptr;
   memTest = (int32_t*)malloc(sizeof(int32_t));
   free((void*)memTest);
