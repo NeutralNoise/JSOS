@@ -12,7 +12,9 @@
 ## STDLIB
 | Task    | Done |
 |---------|------|
-| va_list |      |
+| va_list | done |
+| memcpy  | done |
+| itoa    | done |
 | printf  |      |
 
 See [tier0.md](Documents/tier0.md)
@@ -31,6 +33,7 @@ See [MemoryIdeas.md](Documents/MemoryIdeas.md)
 |--------------------|------|
 | Virtual Terminals  |      |
 | Changing Terminals |      |
+| Escape Codes       |      |
 
 ## Drivers
 ### Input
