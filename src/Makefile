@@ -36,4 +36,5 @@ mykernel.iso: mykernel.bin
 	mv *.iso ../bin
 
 all:
+	make clean
 	make mykernel.iso
