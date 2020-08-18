@@ -2,7 +2,7 @@
 #define MEMORY_MANAGER_H_INCLUDED
 
 #include "MemorySegment.h"
-#include "types.h"
+#include "tier0/types.h"
 
 class MemoryManager {
 public:
