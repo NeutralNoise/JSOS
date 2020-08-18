@@ -17,7 +17,6 @@ clean:
 	rm *.o || true
 	rm *.bin || true
 	rm -r ../bin || true
-	rm -r iso || true
 
 mykernel.iso: mykernel.bin
 	mkdir iso
