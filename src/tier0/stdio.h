@@ -1,23 +1,37 @@
 #ifndef __STDIO_H_INCLUDED
 #define __STDIO_H_INCLUDED
 #include "sys/terminal.h"
+#include "stdarg.h"
+#include "printfCore.h"
 
-void printf(char * str, ...) {
-  //static uint16_t * VideoMemory = (uint16_t*)0xb8000;
+int printf(char * str, ...) {
+  int count = 0;
+  va_list arg;
+    
+  va_start(arg, str);
   for(size_t i = 0; i < strlen(str); i++) {
     switch (str[i]) {
       case '\n':
         Terminal::GetInstance()->IncreaseRow();
         Terminal::GetInstance()->ResetColoum();
+        count++;
         break;
       case '\r':
         Terminal::GetInstance()->ResetColoum();
+        count++;
+        break;
+      case '%':
+        count += ParseFormating(str, i, arg);
         break;
       default:
         Terminal::GetInstance()->PutChar(str[i]);
+        count++;
         break;
     }
+
   }
+  va_end(arg);
+  return count;
 }
 
 #endif //__STDIO_H_INCLUDED
