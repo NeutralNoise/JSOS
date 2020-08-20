@@ -25,8 +25,13 @@ extern "C" void kernelMain(void* multiboot_struct, uint32_t magicNum) {
   Terminal::CreateInstance();
   char msg[13] = "Hello World\n";
   const char * testMsg = "TestMessage!\n";
-
+  uint32_t testuInt = -1;
+  char uintMsg[33];
+  uitoa(testuInt, uintMsg, 10);
   printf(msg);
+  int count = 0;
+  count = printf("The Unsigned Int is %s\n", uintMsg);
+  printf("We just printed %i letters\n", count);
   printf("JSOS Version: ");
   printf("1");
 
