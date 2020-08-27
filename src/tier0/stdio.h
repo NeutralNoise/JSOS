@@ -24,7 +24,7 @@ int printf(char * str, ...) {
         count++;
         break;
       case '%':
-        count += ParseFormating(str, i, arg);
+        count += ParseFormating(str, i, &arg);
         break;
       default:
         Terminal::GetInstance()->PutChar(str[i]);
