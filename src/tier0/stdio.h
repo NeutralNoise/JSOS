@@ -12,12 +12,15 @@ int printf(char * str, ...) {
   for(size_t i = 0; i < strlen(str); i++) {
     switch (str[i]) {
       case '\n':
-        Terminal::GetInstance()->IncreaseRow();
-        Terminal::GetInstance()->ResetColoum();
+        Terminal::GetInstance()->LineFeed();
         count++;
         break;
       case '\r':
         Terminal::GetInstance()->ResetColoum();
+        count++;
+        break;
+      case '\\':
+        Terminal::GetInstance()->PutChar(str[i]);
         count++;
         break;
       case '%':

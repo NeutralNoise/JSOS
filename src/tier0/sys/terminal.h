@@ -3,9 +3,12 @@
 #include "../types.h" //Get those types you.
 #include "../string.h"
 #include "../stdlib.h"
-
+#define USE_SCREEN_BUFFER
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
+#define BUFFER_LINE_COUNT 26
+#define BUFFER_SIZE (VGA_WIDTH * BUFFER_LINE_COUNT)
+#define BUFFER_MEM_SIZE BUFFER_SIZE * sizeof(uint16_t)
 
 //TODO display buffer.
 
@@ -41,23 +44,63 @@ public:
         m_colour = fg | bg << 4;
     }
 
+    void SetCursorColour( vga_Colour c) {
+        m_cursorColour = c | c << 4;
+    }
+
+   void PutCursorAt() {
+       const size_t index = m_x + (m_bufferLine + m_y) * (int8_t)VGA_WIDTH;
+       #ifndef USE_SCREEN_BUFFER
+        p_buffer[index] = vga_Entry(' ', m_cursorColour);
+       #else
+        p_screenBuffer[index] = vga_Entry(' ', m_cursorColour);
+        m_needsRedisplay = true;
+        #endif
+        
+    }
+
     void PutCharAt(char c, vga_Colour colour, int8_t x, int8_t y) {
+        #ifndef USE_SCREEN_BUFFER
         const size_t index = x + y * (int8_t)VGA_WIDTH;
         p_buffer[index] = vga_Entry(c, colour);
+        #else
+        const size_t index = x + (m_bufferLine + y) * (int8_t)VGA_WIDTH;
+        p_screenBuffer[index] = vga_Entry(c, colour);
+        m_needsRedisplay = true;
+        #endif
     }
 
     void PutChar(char c, vga_Colour colour) {
+        #ifndef USE_SCREEN_BUFFER
         vga_ClearBuff();
+        #endif
         PutCharAt(c, colour, m_x, m_y);
         m_x++;
+        m_viewPoint = m_bufferLine;
         if(m_x == VGA_WIDTH) {
-            m_x = 0;
-            m_y++;
+            LineFeed();
         }
+        /*
+        #ifndef USE_SCREEN_BUFFER
         if(m_y == VGA_HEIGHT) {
             m_y = 0;
             m_clearBuffer = true;
         }
+        #else
+        //We want to keep printing all the way to the bottom of the screen then once we are there we want to move everything up.
+        if(m_y == VGA_HEIGHT) {
+            //m_y--;
+            m_y = VGA_HEIGHT - 1;
+            //We can do this all the time is doesn't really matter.
+            if((BUFFER_LINE_COUNT - VGA_HEIGHT) - 1 >= 0) {
+                if(m_bufferLine < (BUFFER_LINE_COUNT - VGA_HEIGHT) - 1) {
+                    m_bufferLine++;
+                }
+            }
+            ScrollBuffer();
+        }
+        #endif
+        */
     }
 
     void PutChar(char c) {
@@ -76,11 +119,17 @@ public:
 
     static void CreateInstance() {
         p_instance = (Terminal*)malloc(sizeof(Terminal));
+        p_instance->p_screenBuffer = (uint16_t*)malloc(BUFFER_MEM_SIZE);
+        memset((void *)p_instance->p_screenBuffer, 0, BUFFER_MEM_SIZE);
         p_instance->m_x = 0;
         p_instance->m_y = 0;
         p_instance->p_buffer = (uint16_t*)0xB8000;
         p_instance->SetColour(VGA_COLOR_WHITE, VGA_COLOR_BLACK);
         p_instance->m_clearBuffer = false;
+        p_instance->m_bufferLine = 0;
+        p_instance->m_viewPoint = 0;
+        p_instance->m_needsRedisplay = false;
+        p_instance->SetCursorColour(VGA_COLOR_WHITE);
     }
 
     static Terminal* GetInstance() {
@@ -88,7 +137,32 @@ public:
     }
 
     static void Destroy() {
+        free((void*)p_instance->p_screenBuffer);
         free((void*)p_instance);
+    }
+
+    void LineFeed(){
+        #ifndef USE_SCREEN_BUFFER
+        m_x = 0;
+        if(++m_y == VGA_HEIGHT) {
+            m_y = 0;
+            m_clearBuffer = true;
+        }
+        #else
+        m_x = 0;
+        m_y++;
+        if(m_y == VGA_HEIGHT) {
+            m_y = VGA_HEIGHT - 1;
+            //small sanity check to make sure we are not over flowing the uint that is m_bufferLine. Its a snow flake!
+            if((BUFFER_LINE_COUNT - VGA_HEIGHT) - 1 >= 0) {
+                if(m_bufferLine < (BUFFER_LINE_COUNT - VGA_HEIGHT) - 1) {
+                    m_bufferLine++;
+                    //m_needsRedisplay = true;
+                }
+            }
+            ScrollBuffer();
+        }
+        #endif
     }
 
     void IncreaseColoum() { 
@@ -98,11 +172,20 @@ public:
         }
     }
     void IncreaseRow() {         
+        #ifndef USE_SCREEN_BUFFER
         if(++m_y == VGA_HEIGHT) {
-            m_y = 0;
-            //Should this reset x?
             m_clearBuffer = true;
+        }
+        #else
+        if(++m_y == VGA_HEIGHT) {
+            m_y = VGA_HEIGHT - 1;
+            if(m_bufferLine < (BUFFER_LINE_COUNT - VGA_HEIGHT)) {
+                m_bufferLine++;
+            }
+            ScrollBuffer();
         } 
+        #endif
+        
     }
 
     void ResetColoum() { m_x = 0; }
@@ -113,6 +196,18 @@ public:
 
     void SetRowColoum(uint8_t x, uint8_t y) { m_x = x; m_y = y; }
     void GetRowColoum(uint8_t* x, uint8_t* y) { *x = m_x; *y = m_y; }
+
+    void DisplayTerminal() {
+        if(m_needsRedisplay) {
+            uint32_t offset = 0 + m_viewPoint * VGA_WIDTH;
+            memcpy(p_buffer, &p_screenBuffer[offset], (size_t)((VGA_WIDTH * VGA_HEIGHT) * sizeof(uint16_t)));
+            PutCursorAt();
+            size_t index = m_x + (m_bufferLine + m_y) * (int8_t)VGA_WIDTH;
+            size_t cursorOffset = m_x + m_y * (int8_t)VGA_WIDTH;
+            memcpy(&p_buffer[cursorOffset], &p_screenBuffer[index], sizeof(uint16_t));
+            m_needsRedisplay = false;
+        }
+    }
 
 private:
 
@@ -132,12 +227,26 @@ private:
         }
     }
 
+    void ScrollBuffer() {
+        size_t bufferOffset = 0 + 1 * VGA_WIDTH;
+        size_t maxBufferOffset = 0 + (BUFFER_LINE_COUNT - 1) * VGA_WIDTH;
+        size_t bufferSize = BUFFER_MEM_SIZE - (size_t)(sizeof(uint16_t) * VGA_WIDTH);
+        memcpy(p_screenBuffer, &p_screenBuffer[bufferOffset], bufferSize);
+        memset(&p_screenBuffer[maxBufferOffset], 0, VGA_WIDTH * sizeof(uint16_t));
+        m_needsRedisplay = true;
+    }
+
     int8_t m_x;
     int8_t m_y;
     int8_t m_colour;
+    int8_t m_cursorColour;
     uint16_t * p_buffer;
     static Terminal * p_instance;
     bool m_clearBuffer;
+    uint16_t * p_screenBuffer;
+    uint32_t m_bufferLine; //What line in buffer is at the top of the screen.
+    uint32_t m_viewPoint; //What is the current line we are viewing
+    bool m_needsRedisplay;
 };
 
 Terminal * Terminal::p_instance = nullptr;
