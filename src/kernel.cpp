@@ -5,6 +5,7 @@
 #include "MemoryManager.h"
 #include "tier0/stdlib.h"
 #include "tier0/sys/terminal.h"
+#include "KernelDefines.h"
 
 //Call constructors for globals
 typedef void (*constructor)();
@@ -23,20 +24,13 @@ extern "C" void kernelMain(void* multiboot_struct, uint32_t magicNum) {
   MemoryManager memManager(heap, (*memupper)*1024 - heap - 10*1024);
 
   Terminal::CreateInstance();
-  char msg[13] = "Hello World\n";
-  const char * testMsg = "TestMessage!\n";
-  uint32_t testuInt = -1;
-  char uintMsg[33];
-  uitoa(testuInt, uintMsg, 10);
-  printf(msg);
-  int count = 0;
-  count = printf("The Unsigned Int is %s\n", uintMsg);
-  printf("We just printed %i letters\n", count);
-  printf("JSOS Version: ");
-  printf("1");
-
-  int32_t * memTest = nullptr;
-  memTest = (int32_t*)malloc(sizeof(int32_t));
-  free((void*)memTest);
-  while(1);
+  char welcomeMsg[13] = "Hello World\n";
+  char verMsg[19] = "JSOS Version: %s \n";
+  char dateMsg[20] = "Built on: %s at %s\n";
+  printf(welcomeMsg);
+  printf(verMsg, __OS_VERSION);
+  printf(dateMsg, __OS_BUILD_DATE, __OS_BUILD_TIME);
+  while(1) {
+    Terminal::GetInstance()->DisplayTerminal();    
+  }
 }
