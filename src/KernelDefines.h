@@ -1,0 +1,8 @@
+#ifndef KERNEL_DEFEINES_H_INCLDED
+#define KERNEL_DEFEINES_H_INCLDED
+
+#define __OS_BUILD_DATE __DATE__
+#define __OS_BUILD_TIME __TIME__
+#define __OS_VERSION "alpha-0.1"
+
+#endif //KERNEL_DEFEINES_H_INCLDED
