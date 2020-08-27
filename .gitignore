@@ -1,0 +1,9 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.o
+
+# Kernel Images
+*.bin
+*.iso
