@@ -34,6 +34,8 @@ See [MemoryIdeas.md](Documents/MemoryIdeas.md)
 | Virtual Terminals  |      |
 | Changing Terminals |      |
 | Escape Codes       |      |
+| Terminal Scrolling | done |
+| Terminal Buffer    | done |
 
 ## Drivers
 ### Input
@@ -53,3 +55,9 @@ See [MemoryIdeas.md](Documents/MemoryIdeas.md)
 | Task               | Done |
 |--------------------|------|
 | Save/Loading Files |      |
+
+### Misc
+| Task                 | Done |
+|----------------------|------|
+| Improve build system |      |
+| Reorder files        |      |
