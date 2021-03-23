@@ -7,6 +7,7 @@
 #endif //__JS_OS
 
 #include "ctype.h"
+#include "cstddef.h"
 
 //Need to work out what to do with windows and linux.
 #if defined(__linux__) && !defined(__JS_OS)
@@ -21,7 +22,7 @@ void* malloc(const unsigned int &size) {
     return MemoryManager::p_activeMemoryManager->Malloc(size);
   }
   else {
-    return nullptr;
+    return NULL;
   }
   #elif defined(__linux__) && !defined(__JS_OS)
   #error "No malloc for linux build!"
@@ -31,6 +32,7 @@ void* malloc(const unsigned int &size) {
   #error "unknown OS so there is no way there is a malloc()."
   #endif //__JS_OS this is what we do on JSOS
   //TODO Work out windows and linux codes.
+  return NULL;
 }
 
 void free(void* ptr) {
