@@ -3,6 +3,7 @@
 
 #include "MemorySegment.h"
 #include "tier0/types.h"
+#include "tier0/cstddef.h"
 
 class MemoryManager {
 public:
@@ -16,7 +17,7 @@ void* Malloc(const size_t &size);
 void Free(void* ptr);
 
 protected:
-MemorySegment * p_first = nullptr;
+MemorySegment * p_first = NULL;
 private:
   uint32_t m_freeSpace = 0;
   uint32_t m_totalSpace = 0;

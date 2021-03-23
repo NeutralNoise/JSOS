@@ -4,13 +4,13 @@
 #define MAX_PAGE_SIZE (10 * MB)
 
 MemoryManager::MemoryManager(const size_t &start, const size_t &size) {
-  if(p_activeMemoryManager == nullptr) {
+  if(p_activeMemoryManager == NULL) {
     p_activeMemoryManager = this;
   }
 
   //work out if we have enough room for a page file.
   if(size < sizeof(MemorySegment)) {
-    p_first = nullptr;
+    p_first = NULL;
   }
   else {
     m_freeSpace = size - sizeof(MemorySegment);
@@ -24,32 +24,32 @@ MemoryManager::MemoryManager(const size_t &start, const size_t &size) {
 }
 
 MemoryManager::~MemoryManager() {
-  if(p_activeMemoryManager == nullptr) {
-    p_activeMemoryManager = nullptr;
+  if(p_activeMemoryManager == NULL) {
+    p_activeMemoryManager = NULL;
   }
 }
 
-MemoryManager * MemoryManager::p_activeMemoryManager = nullptr;
+MemoryManager * MemoryManager::p_activeMemoryManager = NULL;
 
 void* MemoryManager::Malloc(const size_t &size) {
-  MemorySegment * result = nullptr;
-  MemorySegment * tmp = nullptr;
+  MemorySegment * result = NULL;
+  MemorySegment * tmp = NULL;
   
   //Check to see if we have enough space in ram.
   if(sizeof(MemorySegment) + size > m_freeSpace) {
     //TODO display message about not enough space.
-    return nullptr;
+    return NULL;
   }
 
   //Check if we have any free space in a deallocated chunk.
-  for(MemorySegment * chunk = p_first; chunk != nullptr; chunk = chunk->next) {
+  for(MemorySegment * chunk = p_first; chunk != NULL; chunk = chunk->next) {
     if(chunk->size >= size && !chunk->allocated) {
       result = chunk;
     }
   }
 
-  if(result == nullptr) {
-    return nullptr;
+  if(result == NULL) {
+    return NULL;
   }
   //Give us only the memory we need.
   if(result->size >= size + sizeof(MemorySegment) + 1) {
@@ -60,7 +60,7 @@ void* MemoryManager::Malloc(const size_t &size) {
     tmp->size = result->size - size - sizeof(MemorySegment);
     tmp->prev = result;
     tmp->next = result->next;
-    if(tmp->next != nullptr) {
+    if(tmp->next != NULL) {
       tmp->next->prev = tmp;
     }
     result->size = size;
