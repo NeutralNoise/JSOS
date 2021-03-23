@@ -118,8 +118,10 @@ public:
     }
 
     static void CreateInstance() {
-        p_instance = (Terminal*)malloc(sizeof(Terminal));
-        p_instance->p_screenBuffer = (uint16_t*)malloc(BUFFER_MEM_SIZE);
+        //p_instance = (Terminal*)malloc(sizeof(Terminal));
+        p_instance = new Terminal;
+        //p_instance->p_screenBuffer = (uint16_t*)malloc(BUFFER_MEM_SIZE);
+        p_instance->p_screenBuffer = new uint16_t[BUFFER_MEM_SIZE];
         memset((void *)p_instance->p_screenBuffer, 0, BUFFER_MEM_SIZE);
         p_instance->m_x = 0;
         p_instance->m_y = 0;
@@ -137,8 +139,12 @@ public:
     }
 
     static void Destroy() {
+        /*
         free((void*)p_instance->p_screenBuffer);
         free((void*)p_instance);
+        */
+       delete p_instance->p_screenBuffer;
+       delete p_instance;
     }
 
     void LineFeed(){
