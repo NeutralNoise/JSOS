@@ -80,27 +80,6 @@ public:
         if(m_x == VGA_WIDTH) {
             LineFeed();
         }
-        /*
-        #ifndef USE_SCREEN_BUFFER
-        if(m_y == VGA_HEIGHT) {
-            m_y = 0;
-            m_clearBuffer = true;
-        }
-        #else
-        //We want to keep printing all the way to the bottom of the screen then once we are there we want to move everything up.
-        if(m_y == VGA_HEIGHT) {
-            //m_y--;
-            m_y = VGA_HEIGHT - 1;
-            //We can do this all the time is doesn't really matter.
-            if((BUFFER_LINE_COUNT - VGA_HEIGHT) - 1 >= 0) {
-                if(m_bufferLine < (BUFFER_LINE_COUNT - VGA_HEIGHT) - 1) {
-                    m_bufferLine++;
-                }
-            }
-            ScrollBuffer();
-        }
-        #endif
-        */
     }
 
     void PutChar(char c) {
@@ -118,9 +97,7 @@ public:
     }
 
     static void CreateInstance() {
-        //p_instance = (Terminal*)malloc(sizeof(Terminal));
         p_instance = new Terminal;
-        //p_instance->p_screenBuffer = (uint16_t*)malloc(BUFFER_MEM_SIZE);
         p_instance->p_screenBuffer = new uint16_t[BUFFER_MEM_SIZE];
         memset((void *)p_instance->p_screenBuffer, 0, BUFFER_MEM_SIZE);
         p_instance->m_x = 0;
@@ -139,10 +116,6 @@ public:
     }
 
     static void Destroy() {
-        /*
-        free((void*)p_instance->p_screenBuffer);
-        free((void*)p_instance);
-        */
        delete p_instance->p_screenBuffer;
        delete p_instance;
     }
