@@ -6,6 +6,7 @@
 #include "tier0/stdlib.h"
 #include "tier0/sys/terminal.h"
 #include "KernelDefines.h"
+#include "Interrupts.h"
 
 //Call constructors for globals
 typedef void (*constructor)();
@@ -18,12 +19,19 @@ extern "C" void callConstructors() {
 }
 
 extern "C" void kernelMain(void* multiboot_struct, uint32_t magicNum) {
+  printf("Test\n");
   GlobalDescriptorTable gdt;
+
   uint32_t* memupper = (uint32_t*)(((size_t)multiboot_struct) + 8);
   size_t heap = 10*1024*1024;
   MemoryManager memManager(heap, (*memupper)*1024 - heap - 10*1024);
 
   Terminal::CreateInstance();
+
+  InterruptManager interruptManager(&gdt);
+  //Activate hardware here
+  interruptManager.Activate();
+
   char welcomeMsg[13] = "Hello World\n";
   char verMsg[19] = "JSOS Version: %s \n";
   char dateMsg[20] = "Built on: %s at %s\n";
