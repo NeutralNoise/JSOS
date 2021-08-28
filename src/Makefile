@@ -2,13 +2,13 @@
 CPPPARAMS = -m32 -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-exceptions -fno-leading-underscore -std=c++11 -D__JS_OS
 ASPARAMS = --32
 LDPARAMS = -melf_i386
-objects = loader.o gdt.o port.o kernel.o MemoryManager.o
+objects = loader.o gdt.o port.o interruptsStubs.o Interrupts.o MemoryManager.o kernel.o
 
 %.o: %.cpp
 			g++ $(CPPPARAMS) -o $@ -c $<
 
 %.o: %.s
-				as $(ASPARAMS) -o $@ $<
+			as $(ASPARAMS) -o $@ $<
 
 mykernel.bin: linker.ld $(objects)
 				ld $(LDPARAMS) -T $< -o $@ $(objects)
