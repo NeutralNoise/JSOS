@@ -1,14 +1,11 @@
 #include "MemoryManager.h"
-#include "tier0/defines.h"
-
-#define MAX_PAGE_SIZE (10 * MB)
 
 MemoryManager::MemoryManager(const size_t &start, const size_t &size) {
   if(p_activeMemoryManager == NULL) {
     p_activeMemoryManager = this;
   }
 
-  //work out if we have enough room for a page file.
+  //work out if we have enough room for a memory chunk.
   if(size < sizeof(MemorySegment)) {
     p_first = NULL;
   }

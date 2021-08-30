@@ -4,6 +4,11 @@
 #include "MemorySegment.h"
 #include "tier0/types.h"
 #include "tier0/cstddef.h"
+#include "tier0/defines.h"
+
+extern "C"  inline uint32_t byte_to_mb(uint32_t b) {
+  return b/MB;
+}
 
 class MemoryManager {
 public:
@@ -15,6 +20,15 @@ static MemoryManager * p_activeMemoryManager;
 
 void* Malloc(const size_t &size);
 void Free(void* ptr);
+
+uint32_t TotalMemory() const {
+  return m_totalSpace;
+}
+
+uint32_t FreeMemory() const {
+  return m_freeSpace;
+}
+
 
 protected:
 MemorySegment * p_first = NULL;
