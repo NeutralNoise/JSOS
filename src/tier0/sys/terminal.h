@@ -102,6 +102,8 @@ public:
         memset((void *)p_instance->p_screenBuffer, 0, BUFFER_MEM_SIZE);
         p_instance->m_x = 0;
         p_instance->m_y = 0;
+        p_instance->m_savedX = 0;
+        p_instance->m_savedY = 0;
         p_instance->p_buffer = (uint16_t*)0xB8000;
         p_instance->SetColour(VGA_COLOR_WHITE, VGA_COLOR_BLACK);
         p_instance->m_clearBuffer = false;
@@ -188,6 +190,16 @@ public:
         }
     }
 
+    void SaveCursorPos() {
+        m_savedX = m_x;
+        m_savedY = m_y;
+    }
+
+    void RestoreCursorPos() {
+        m_x = m_savedX;
+        m_y = m_savedY;
+    }
+
 private:
 
     uint16_t vga_Entry(uint8_t uc, uint8_t colour) {
@@ -217,6 +229,8 @@ private:
 
     int8_t m_x;
     int8_t m_y;
+    int8_t m_savedX;
+    int8_t m_savedY;
     int8_t m_colour;
     int8_t m_cursorColour;
     uint16_t * p_buffer;
