@@ -62,7 +62,7 @@ int32_t _ParseNumberFromEscapeCode(const char * str, uint32_t &index, uint32_t &
     return rtn;
 }
 
-uint32_t ParseFormating(const char * str, uint32_t &index, va_list *arg) {
+uint32_t _ParseFormating(const char * str, uint32_t &index, va_list *arg) {
     int32_t count = 0;
     switch (str[index + 1])
     {
@@ -98,7 +98,7 @@ uint32_t ParseFormating(const char * str, uint32_t &index, va_list *arg) {
     return count;
 }
 
-int32_t ParseEscapeCodes(const char * str, uint32_t &index) {
+int32_t _ParseEscapeCodes(const char * str, uint32_t &index) {
     uint32_t count = 0; //number of processed chars.
     int32_t numX = -1;
     int32_t numY = -1;

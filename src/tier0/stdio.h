@@ -24,12 +24,12 @@ int printf(char * str, ...) {
         count++;
         break;
       case '%':
-        count += ParseFormating(str, i, &arg);
+        count += _ParseFormating(str, i, &arg);
         break;
       case '\x1b': 
       //case '\33': //is valid.
       //case '\e': //is valid.
-        count += ParseEscapeCodes(str, i);
+        count += _ParseEscapeCodes(str, i);
         break;
       default:
         Terminal::GetInstance()->PutChar(str[i]);
