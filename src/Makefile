@@ -38,3 +38,4 @@ mykernel.iso: mykernel.bin
 all:
 	make clean
 	make mykernel.iso
+	rm -r *.o || true
