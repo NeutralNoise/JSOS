@@ -26,6 +26,11 @@ int printf(char * str, ...) {
       case '%':
         count += ParseFormating(str, i, &arg);
         break;
+      case '\x1b': 
+      //case '\33': //is valid.
+      //case '\e': //is valid.
+        count += ParseEscapeCodes(str, i);
+        break;
       default:
         Terminal::GetInstance()->PutChar(str[i]);
         count++;
