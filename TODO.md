@@ -1,13 +1,14 @@
 # TODO
 
 1. [Standard Libary](#STDLIB)
-1. [Memory](#Memory)
-2. [Terminal](#Terminal)
-2. [Drivers](#Drivers)
+2. [Memory](#Memory)
+3. [Terminal](#Terminal)
+4. [Drivers](#Drivers)
     1. [Input](#Input)
     2. [Display](#Display)
     3. [Network](Network)
     4. [HDD](#HDD)
+5. [Misc](#Misc)
 
 ## STDLIB
 | Task    | Done |
