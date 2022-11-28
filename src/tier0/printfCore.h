@@ -36,31 +36,25 @@ void __DisplayCurrentString(char *str) {
     x++;
 }
 */
-//#define __CORE_TEMP_STRING_SIZE 33
+#define __CORE_TEMP_STRING_SIZE 33
 
-int32_t _ParseNumberFromEscapeCode(const char * str, uint32_t &index, uint32_t &count) {
-    int32_t rtn = -1; // -1 for error. Not a number.
-    char temp[33] = {'\0'};
-    size_t strLen = strlen(str);
-    //Convert the cache chars then convert to int.
-    
-    for(uint32_t i = 0; /*will break else where*/ ;i++) {
-        // sanity check
-        if(i == 33 || i >= strLen) {
-            count++;
-            rtn = atoi(temp);
-            break;
+void _ParseNumberFromEscapeCode(const char * str, const uint32_t &index, uint32_t *count, uint32_t *num) {
+	char numstr[__CORE_TEMP_STRING_SIZE] = {'\0'}; //This is just a random number.
+	uint32_t charNum = 0;
+	while (isdigit(str[index + *count])) {
+        if(charNum == __CORE_TEMP_STRING_SIZE) {
+            //Number too big.
+            //TODO throw error?
         }
-        //There is no more numbers
-        if(!isdigit(str[index + count])) {
-            rtn = atoi(temp);
-            break;
-        }
-        temp[i] = str[index + count];
-        count++;
-    }
-    return rtn;
+		numstr[charNum] = str[index + *count];
+		charNum++;
+		(*count)++;
+	}
+	//Convert string to number;
+	*num = atoi(&numstr[0]);
 }
+
+
 
 uint32_t _ParseFormating(const char * str, uint32_t &index, va_list *arg) {
     int32_t count = 0;
@@ -98,64 +92,64 @@ uint32_t _ParseFormating(const char * str, uint32_t &index, va_list *arg) {
     return count;
 }
 
-int32_t _ParseEscapeCodes(const char * str, uint32_t &index) {
-    uint32_t count = 0; //number of processed chars.
-    int32_t numX = -1;
-    int32_t numY = -1;
+int32_t _ParseEscapeCodes(const char * str, uint32_t &index, uint8_t &error) {
+    //TODO change to uint8_t
+    uint32_t count = 1; //number of processed chars.
+    int32_t numL = -1; //This might have to be changed to uint8_t
+    int32_t numR = -1; //This might have to be changed to uint8_t
+    char command = '\0';
     size_t strLen = strlen(str);
     //TODO Need to do a check here to make sure we are not accessing memory we shouldn't.
-    if(str[index + 1] == '[') {
+    if(str[index + count] == '[') {
         count++;
-        char testStr[32] = {'\0'};
-        //Check if there are numbers after the '['
-        if(isdigit(str[index + count + 1])) {
-            count++;
-            numX = _ParseNumberFromEscapeCode(str, index, count);
-            //Check if there is something after the number.
-            if((index + count + 1) < strLen || str[index + count] != '\0' ) {
-                //check if there are more numbers.
-                if(str[index + count] == ';') {
-                    count++;
-                    numY = _ParseNumberFromEscapeCode(str, index, count);
-                }
-            }
-        }
-        //Cursor Controls
-        //we have some numbers to do shit with.
-        if(numX != -1 || numY != -1) {
-            //Terminal::GetInstance()->PutCharAt('y',VGA_COLOR_LIGHT_BLUE, 14, 14);
-            if (str[index + count ] == 'H' || str[index + count] == 'f') { //moves cursor to line #, column #
-                if(numX != -1) {
-                    Terminal::GetInstance()->SetColoum((uint8_t)numX);
-                }
-                if(numY != -1) {
-                    Terminal::GetInstance()->SetRow((uint8_t)numY);
-                }
+        //Check if there is a number
+        if(isdigit(str[index + count])) {
+            _ParseNumberFromEscapeCode(str, index, &count, (uint32_t*)&numL);
+            if(str[index + count] == ';') {
                 count++;
+                if(isdigit(str[index + count])) {
+                    _ParseNumberFromEscapeCode(str, index, &count, (uint32_t*)&numR);
+                }
+                else {
+                    //Error
+                    error = 1;
+                }
             }
         }
-        else if (str[index + count + 1] == 'H') //moves cursor to home position (0, 0)
-        {
-        
-            Terminal::GetInstance()->ResetColoum();
-            Terminal::GetInstance()->ResetRow();
+        if(isalpha(str[index + count])) {
+            command = str[index + count];
             count++;
         }
-        else if (str[index + count + 1] == 's') //save cursor position (SCO)
-        {
-            Terminal::GetInstance()->SaveCursorPos();
-            count++;
-        }
-        else if (str[index + count + 1] == 'u') //restores the cursor to the last saved position (SCO)
-        {
-            Terminal::GetInstance()->RestoreCursorPos();
-            count++;
+        if(error != 1) {
+        //Now we check if we have a useable command
+        //Cursor Controls
+            switch (command)
+            {
+            case 'H'://moves cursor to line #, column # or if no leading number goes too 0,0 \x1b[12;12H \x1b[H.
+                if(numL == -1 && numR == -1) {
+                    Terminal::GetInstance()->ResetColoum();
+                    Terminal::GetInstance()->ResetRow();
+                    break;
+                }
+            case 'f': //moves cursor to line #, column #
+                Terminal::GetInstance()->SetColoum((uint8_t)numL);
+                Terminal::GetInstance()->SetRow((uint8_t)numR);
+                break;
+            case 'A': //moves cursor up # lines
+                //Do nothing at the moment.
+                //TODO fill this out.
+                break;
+            case 'B':
+                Terminal::GetInstance()->IncreaseRow((uint8_t)numL); //moves cursor down # lines
+                break;
+            default:
+                break;
+            }
+
         }
 
     }
-    else {
-        //sometimes theres other things. ignore them for now
-    }
+    
     index += count;
     return count;
 }

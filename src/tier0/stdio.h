@@ -6,6 +6,7 @@
 
 int printf(char * str, ...) {
   int count = 0;
+  uint8_t err = 0;
   va_list arg;
     
   va_start(arg, str);
@@ -29,7 +30,7 @@ int printf(char * str, ...) {
       case '\x1b': 
       //case '\33': //is valid.
       //case '\e': //is valid.
-        count += _ParseEscapeCodes(str, i);
+        count += _ParseEscapeCodes(str, i, err);
         break;
       default:
         Terminal::GetInstance()->PutChar(str[i]);
